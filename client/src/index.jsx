@@ -3,19 +3,38 @@ import ReactDOM from 'react-dom';
 import $ from 'jquery';
 import Search from './components/Search.jsx';
 import RepoList from './components/RepoList.jsx';
+const axios = require('axios');
 
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { 
+    this.state = {
       repos: []
     }
 
+    this.getTop = this.getTop.bind(this);
+  }
+
+  componentDidMount() {
+    this.getTop();
   }
 
   search (term) {
-    console.log(`${term} was searched`);
     // TODO
+    axios.post('/repos', { username: term })
+      .then(res => {
+        if(res.status === 201) {
+        this.getTop();
+        }
+      })
+      .catch(err => console.log)
+  }
+
+  getTop() {
+    axios.get('/repos')
+      .then(results => {
+        this.setState({ repos: results.data })
+      });
   }
 
   render () {
